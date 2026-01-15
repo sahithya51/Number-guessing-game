@@ -1,61 +1,94 @@
-
 import random
 
-# Try importing logo
 try:
     import logo
 except ImportError:
     logo = None
 
 
-while True:
-    
-    # Print logo if available
+def show_logo_and_instructions():
+    print("\nNUMBER GUESSING GAME\n")
     if logo is not None:
         print(logo.logo)
 
     print("How to play?\n")
     print("Enter s to start the game.")
-    print("Type a number between 1 to 100 from the keyboard.")
+    print("Guess a number between 1 and 100.")
     print("Enter 0 anytime to exit.\n")
 
-    start = input("Enter s to start: ").lower()
 
-    if start != 's':
-        print("Invalid input! Program stopped.")
-        break
-
-    print("\nA random number between 1 and 100 has been generated.")
-    print("Start guessing!\n")
-
-    generated_number = random.randint(1, 100)
+def play_game(round_number):
+    number = random.randint(1, 100)
     attempts = 0
 
+    print(f"\n--- ROUND {round_number} ---")
+    print("A random number between 1 to 100 has been generated.")
+    print("Start guessing!\n")
+
     while True:
-        try:
-            guessed_number = int(input("Guess a number between 1 and 100: "))
-        except ValueError:
-            print("Please enter a valid number!")
+        user_input = input("Guess a number between 1 to 10: ")
+
+        # character check
+        if not user_input.isdigit():
+            print("Please enter a valid number.")
             continue
 
-        if guessed_number == 0:
-            print("You exited the game.")
-            print(f"The number was {generated_number}")
-            break
+        guess = int(user_input)
+
+        # exit option
+        if guess == 0:
+            print("You exited the round.")
+            print(f"The number was {number}")
+            return False, attempts   # round lost
+
+        # range check
+        if guess < 1 or guess > 100:
+            print("Guessing number is out of range. Please enter the number between 1 to 100.")
+            continue
 
         attempts += 1
 
-        if guessed_number < generated_number:
-            print("Your guess is too low")
-        elif guessed_number > generated_number:
-            print("Your guess is too high")
+        if guess < number:
+            print("Too low!")
+        elif guess > number:
+            print("Too high!")
         else:
-            print(f"\nYour guess is right! The number was {generated_number}")
-            print(f"You guessed it in {attempts} attempts!")
+            print(f"\nCorrect! The number was {number}")
+            print(f"You guessed it in {attempts} attempts.")
+            return True, attempts    # round won
+
+
+def main():
+    show_logo_and_instructions()   # shown only once
+
+    # start validation
+    while True:
+        start = input("Enter s to start: ").lower()
+        if start == 's':
+            break
+        else:
+            print("Invalid input, please try again.")
+
+    round_number = 1
+    score = 0
+
+    while True:
+        won, attempts = play_game(round_number)
+
+        if won:
+            score += 1
+
+        print(f"\nScore: {score} | Rounds Played: {round_number}")
+
+        again = input("\nDo you want to play again? (yes/no): ").lower()
+        if again != "yes":
+            print("\nFinal Score Summary")
+            print(f"Total Rounds Played: {round_number}")
+            print(f"Total Rounds Won: {score}")
+            print("Thanks for playing!")
             break
 
-    play_again = input("\nDo you want to play again? (yes/no): ").lower()
+        round_number += 1
 
-    if play_again != "yes":
-        print("Thanks for playing!")
-        break
+
+main()
